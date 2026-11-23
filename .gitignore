@@ -1,0 +1,10 @@
+﻿# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Obsidian workspace cache
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
