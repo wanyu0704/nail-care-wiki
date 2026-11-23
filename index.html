@@ -8,519 +8,690 @@
     :root {
       --primary: #c24d74;
       --primary-dark: #9e2a52;
-      --primary-light: #fbebf0;
-      --bg-color: #faf7f8;
-      --card-bg: #ffffff;
-      --text-main: #333333;
+      --primary-light: #fdf2f5;
+      --bg-canvas: #1e1e24;
+      --bg-card: #ffffff;
+      --text-main: #2b2b2b;
       --text-muted: #666666;
-      --border-color: #f0d5df;
-      --accent: #d4a373;
+      --border-color: #f1d5df;
+      --accent-gold: #c59b27;
+      --highlight-bg: #fff5f8;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    body {
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-canvas);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      background-color: #212121;
       color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow: hidden;
     }
-    .deck-container {
-      position: relative;
-      width: 90vw;
-      max-width: 1200px;
-      aspect-ratio: 16 / 9;
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+
+    /* 嚴格分頁機制：所有 .slide 預設 display: none，100vh，絕對隱藏溢出 */
+    .slide {
+      display: none !important;
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden !important;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: var(--bg-card);
+      padding: 24px 48px;
+      box-sizing: border-box;
     }
+
+    /* 只有當前頁啟用 flex 佈局 */
+    .slide.active {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: space-between;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0.3; transform: scale(0.995); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* 頂部 Header */
     .slide-header {
-      padding: 16px 36px 10px;
+      height: 48px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 14px;
-      color: var(--primary);
-      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+      flex-shrink: 0;
     }
+
+    .slide-title-tag {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    .page-indicator {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+    }
+
+    /* 核心雙欄 Layout 與版面防溢出 */
     .slide-body {
       flex: 1;
-      padding: 30px 48px;
-      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 40px;
+      align-items: center;
+      height: calc(100vh - 130px);
+      max-height: 80%;
+      overflow: hidden !important;
+      padding: 10px 0;
+    }
+
+    /* 左側文字/表格欄位防溢出 */
+    .col-text {
+      height: 100%;
+      max-height: 80%;
+      overflow: hidden !important;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      padding-right: 10px;
     }
+
+    /* 右側多媒體圖片防溢出 */
+    .col-media {
+      height: 100%;
+      max-height: 80%;
+      overflow: hidden !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .col-media img {
+      max-height: 80%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px rgba(194, 77, 116, 0.12);
+    }
+
+    /* 文字樣式控制 */
+    h1 {
+      font-size: clamp(28px, 2.6vw, 42px);
+      color: var(--primary-dark);
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: clamp(22px, 2vw, 30px);
+      color: var(--primary-dark);
+      margin-bottom: 16px;
+      border-left: 5px solid var(--primary);
+      padding-left: 12px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      font-size: clamp(16px, 1.3vw, 20px);
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    p, li {
+      font-size: clamp(14px, 1.15vw, 17px);
+      line-height: 1.6;
+      color: #3a3a3a;
+      margin-bottom: 8px;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+
+    .highlight-card {
+      background: var(--highlight-bg);
+      border-left: 4px solid var(--primary);
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: clamp(13px, 1.05vw, 15px);
+      color: var(--primary-dark);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* 表格樣式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: clamp(13px, 1.05vw, 15px);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* 底部 Footer */
     .slide-footer {
-      padding: 12px 36px;
+      height: 42px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-top: 1px solid var(--border-color);
-      background: var(--bg-color);
+      padding-top: 6px;
+      flex-shrink: 0;
       font-size: 13px;
       color: var(--text-muted);
     }
-    .slide {
-      display: none;
-      height: 100%;
-      flex-direction: column;
-      justify-content: center;
-      animation: fadeIn 0.3s ease;
-    }
-    .slide.active {
+
+    /* 懸浮控制列 */
+    .nav-controls {
+      position: fixed;
+      bottom: 16px;
+      right: 32px;
       display: flex;
+      gap: 10px;
+      z-index: 999;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    h1 {
-      font-size: 38px;
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-color);
       color: var(--primary-dark);
-      margin-bottom: 16px;
-      line-height: 1.25;
-    }
-    h2 {
-      font-size: 28px;
-      color: var(--primary);
-      margin-bottom: 20px;
-      border-left: 6px solid var(--primary);
-      padding-left: 14px;
-    }
-    h3 {
-      font-size: 20px;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      font-weight: 400;
-    }
-    p, li {
-      font-size: 18px;
-      line-height: 1.7;
-      color: #444;
-      margin-bottom: 8px;
-    }
-    ul, ol {
-      padding-left: 28px;
-      margin-bottom: 16px;
-    }
-    .lead-slide {
-      text-align: center;
-      align-items: center;
-    }
-    .lead-slide h1 {
-      font-size: 46px;
-      color: var(--primary-dark);
-    }
-    .lead-badge {
-      display: inline-block;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 6px 18px;
+      padding: 6px 16px;
       border-radius: 20px;
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    .split-layout {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 32px;
-      align-items: center;
-    }
-    .media-card {
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      border: 1px solid var(--border-color);
-      max-height: 380px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #fdfdfd;
-    }
-    .media-card img {
-      max-width: 100%;
-      max-height: 360px;
-      object-fit: contain;
-    }
-    .highlight-box {
-      background: var(--primary-light);
-      border-left: 4px solid var(--primary);
-      padding: 14px 20px;
-      border-radius: 6px;
-      margin-top: 14px;
-      font-size: 16px;
-      color: var(--primary-dark);
-      font-weight: 500;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 16px;
-    }
-    th, td {
-      border: 1px solid var(--border-color);
-      padding: 10px 14px;
-      text-align: left;
-    }
-    th {
-      background-color: var(--primary-light);
-      color: var(--primary-dark);
-      font-weight: 600;
-    }
-    /* Controls */
-    .controls {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-      align-items: center;
-    }
-    .btn {
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      padding: 8px 18px;
-      border-radius: 24px;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      font-weight: 600;
-      color: #333;
-      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
     }
-    .btn:hover {
-      background: #ffffff;
-      color: var(--primary);
-      transform: translateY(-1px);
-    }
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 4px;
+
+    .nav-btn:hover {
       background: var(--primary);
-      transition: width 0.3s;
+      color: #ffffff;
+      transform: translateY(-2px);
     }
+
+    /* 講者備忘錄抽屜 */
     .notes-drawer {
       display: none;
-      position: absolute;
+      position: fixed;
       right: 0;
       top: 0;
       bottom: 0;
       width: 320px;
-      background: #2d3139;
-      color: #f0f0f0;
+      background: #252830;
+      color: #e5e7eb;
       padding: 24px;
-      box-shadow: -4px 0 20px rgba(0,0,0,0.3);
-      z-index: 100;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+      z-index: 1000;
       overflow-y: auto;
     }
+
     .notes-drawer.open {
       display: block;
     }
+
     .notes-drawer h4 {
-      color: #ffb3c6;
-      margin-bottom: 12px;
+      color: #ffb6c1;
       font-size: 16px;
+      margin-bottom: 12px;
     }
+
     .notes-drawer p {
-      color: #d1d5db;
       font-size: 14px;
+      color: #cbd5e1;
       line-height: 1.6;
     }
   </style>
 </head>
 <body>
 
-  <div class="deck-container">
+  <!-- Slide 1: 封面 -->
+  <section class="slide active" id="slide-1" data-note="各位學員好，歡迎參加今天的穿戴甲全方位教學課程。今天我們將從甲型規格、工藝美學、配戴操作到日常養護，全方位揭密如何把穿戴甲戴得舒服、牢固又健康。">
     <div class="slide-header">
-      <span>💅 穿戴甲客製化設計與保養教學</span>
-      <span id="slideIndicator">1 / 11</span>
+      <span class="slide-title-tag">💅 穿戴甲客製化設計與日常保養</span>
+      <span class="page-indicator">1 / 11</span>
     </div>
-
     <div class="slide-body">
-      <!-- Slide 1 -->
-      <div class="slide lead-slide active" data-note="各位學員好，歡迎參加今天的穿戴甲全方位教學課程。今天我們將從甲型規格、工藝美學、配戴操作到日常養護，全方位揭密如何把穿戴甲戴得舒服、牢固又健康。">
-        <span class="lead-badge">沙龍級美甲教學系列</span>
-        <h1>穿戴甲客製化設計與日常保養</h1>
+      <div class="col-text">
+        <span class="badge">沙龍級美甲教學系列</span>
+        <h1>穿戴甲客製化設計<br>與日常保養全攻略</h1>
         <h3>從精準尺寸測量、彩繪工藝到無痛卸甲與真甲滋養</h3>
-        <p style="color: #777; font-size: 16px; margin-top: 20px;">💡 使用鍵盤左右鍵 ◀ ▶ 或下方按鈕切換投影片</p>
+        <p><strong>主講講師</strong>：專業美甲美學講師</p>
+        <p><strong>適用對象</strong>：穿戴甲愛好者、客製美甲師、沙龍技術學員</p>
+        <div class="highlight-card">
+          💡 <strong>操作提示</strong>：支援鍵盤左右方向鍵 [◀] [▶]、空白鍵切換，按 [N] 鍵可開啟講師備忘稿。
+        </div>
       </div>
+      <div class="col-media">
+        <img src="assets/cat_eye_design.jpg" alt="美甲作品形象圖">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>Nail Care & Press-on Wiki | 穿戴甲知識庫</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
 
-      <!-- Slide 2 -->
-      <div class="slide" data-note="整個課程分為六大單元，兼顧設計與實用護理。">
-        <h2>課程大綱 (Curriculum)</h2>
-        <ul style="font-size: 19px;">
-          <li><strong>單元一：精準尺寸測量與專屬甲型挑選</strong>（軟尺量測、XS-L碼數、四大甲型修飾）</li>
-          <li><strong>單元二：客製化設計美學與工藝亮點</strong>（三大貓眼推磁、油畫風堆疊、十指主次配置）</li>
-          <li><strong>單元三：果凍膠 vs 固態膠 配戴評估</strong>（維持度、防水等級、真甲耗損全方位對比）</li>
-          <li><strong>單元四：標準安全卸甲 SOP</strong>（40度溫水木棒旋轉卸法、解膠劑軟化原則）</li>
-          <li><strong>單元五：日常居家防護四大習慣</strong>（黃金4小時守則、指腹發力轉變）</li>
-          <li><strong>單元六：原生甲深層滋養與甲片收納</strong>（海綿條平整、指緣油抗氧化、避光保存）</li>
+  <!-- Slide 2: 課程大綱 -->
+  <section class="slide" id="slide-2" data-note="整個課程分為六大單元，兼顧設計與實用護理。學完之後大家能建立系統性的穿戴甲標準觀念。">
+    <div class="slide-header">
+      <span class="slide-title-tag">💅 穿戴甲客製化設計與日常保養</span>
+      <span class="page-indicator">2 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>課程核心模組大綱</h2>
+        <ul>
+          <li><strong>單元一：精準尺寸測量與專屬甲型挑選</strong><br>軟尺測量法、XS-L 碼數對照、四大主流甲型特點。</li>
+          <li><strong>單元二：客製化設計美學與工藝亮點</strong><br>三大貓眼推磁技巧、油畫風堆疊、十指主次視覺佈局。</li>
+          <li><strong>單元三：果凍膠 vs 固態膠 雙方案配戴評估</strong><br>維持度、防水等級、真甲耗損度全方位比較。</li>
+          <li><strong>單元四：標準安全卸甲 SOP</strong><br>40 度溫水木棒無痛旋轉卸除法、解膠劑軟化原則。</li>
+          <li><strong>單元五：日常居家防護四大好習慣</strong><br>配戴後「黃金 4 小時」守則、改用指腹發力轉變。</li>
+          <li><strong>單元六：原生甲深層滋養與甲片收納</strong><br>指緣油抗氧化保濕、真甲呼吸休息期、避光保存。</li>
         </ul>
       </div>
-
-      <!-- Slide 3 -->
-      <div class="slide split-layout" data-note="測量時一定要使用柔軟的量甲尺貼著弧度量，千萬不能用硬直尺凌空比對，否則量出來的數值會比實際小很多。">
-        <div>
-          <h2>真甲弧度軟尺測量法</h2>
-          <ol>
-            <li><strong>尋找測量位置</strong>：定位甲面最寬之處（甲床中段）。</li>
-            <li><strong>軟尺緊密貼合</strong>：緊貼真甲弧度，量測左側甲溝至右側甲溝。</li>
-            <li><strong>記錄五指數據</strong>：大拇指至小指毫米數（如 15-11-12-11-8）。</li>
-          </ol>
-          <div class="highlight-box">
-            ⚠️ <strong>「寧大勿小」原則</strong>：若介於兩碼之間請選大一號！收到後可用砂條微修，選太小會夾肉壓迫甲床。
-          </div>
-        </div>
-        <div class="media-card">
-          <img src="assets/nail_shapes.jpg" alt="甲型對照圖">
-        </div>
-      </div>
-
-      <!-- Slide 4 -->
-      <div class="slide split-layout" data-note="四大甲型各有千秋，杏仁型修飾手型效果最好，中梯形則極具歐美時尚感。">
-        <div>
-          <h2>四大主流甲型特點與風格</h2>
-          <ul>
-            <li><strong>中梯形 (Medium Coffin)</strong>：兩側收窄頂端平切，視覺拉長手指，歐美高級感。</li>
-            <li><strong>杏仁型 (Almond)</strong>：尖端圓潤溫柔，極修飾肉肉手與短手指，最適貓眼。</li>
-            <li><strong>短橢圓 (Short Oval)</strong>：貼近原生甲，日常生活方便，上班族學生首選。</li>
-            <li><strong>方形 (Square)</strong>：個性俐落，平整甲面最適合幾何彩繪創作。</li>
-          </ul>
-        </div>
-        <div class="media-card">
-          <img src="assets/nail_shapes.jpg" alt="甲型對照圖">
-        </div>
-      </div>
-
-      <!-- Slide 5 -->
-      <div class="slide split-layout" data-note="貓眼膠的推磁技巧非常考驗耐心，保持3mm的懸浮高度能吸出最清晰的光帶。">
-        <div>
-          <h2>貓眼膠光澤與磁吸技巧</h2>
-          <ul>
-            <li><strong>寬貓眼 (Wide Cat-eye)</strong><br>四角向中心均勻推磁，形成面狀通透絲緞高光。</li>
-            <li><strong>斜線貓眼 (Diagonal Cat-eye)</strong><br>條形磁鐵 45 度傾斜放置，吸出俐落明亮折射光帶。</li>
-            <li><strong>玻璃珠貓眼 (Glass Bead)</strong><br>圓柱磁鐵環形繞圈引導，創造如水晶球般的圓形深邃立體光斑。</li>
-          </ul>
-        </div>
-        <div class="media-card">
-          <img src="assets/cat_eye_design.jpg" alt="貓眼設計圖">
-        </div>
-      </div>
-
-      <!-- Slide 6 -->
-      <div class="slide" data-note="切記不要十指都畫得很複雜，適當留白才顯高級。">
-        <h2>十指視覺構圖與主次焦點配置</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px;">
-          <div style="background:#fdf4f7; padding: 18px; border-radius: 8px; border: 1px solid #f2cfdb;">
-            <h3 style="color: var(--primary); margin-bottom: 8px;">👑 主焦點 (食指/無名指)</h3>
-            <p style="font-size: 15px;">配置最精細手繪油畫、3D 立體浮雕造形或奢華排鑽，負責第一眼驚豔。</p>
-          </div>
-          <div style="background:#fdf4f7; padding: 18px; border-radius: 8px; border: 1px solid #f2cfdb;">
-            <h3 style="color: var(--primary); margin-bottom: 8px;">✨ 次焦點 (拇指/中指)</h3>
-            <p style="font-size: 15px;">配置通透貓眼光影、氣質冰透暈染或 1mm 極細法式金邊，呼應主色調。</p>
-          </div>
-          <div style="background:#fdf4f7; padding: 18px; border-radius: 8px; border: 1px solid #f2cfdb;">
-            <h3 style="color: var(--primary); margin-bottom: 8px;">🍃 陪襯指 (小指)</h3>
-            <p style="font-size: 15px;">簡約純色跳色或極細微珠光，提供視覺喘息與留白空間，避免雜亂擁擠。</p>
-          </div>
-        </div>
-        <div class="highlight-box">
-          🎨 <strong>三色律原則</strong>：同手全套色彩不超過 3 種主色，確保冷暖色調視覺和諧。
-        </div>
-      </div>
-
-      <!-- Slide 7 -->
-      <div class="slide split-layout" data-note="果凍膠與固態膠各有專長，根據活動需求選用。">
-        <div>
-          <h2>果凍膠 vs 固態膠 評估對比</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>評估維度</th>
-                <th>果凍膠 (Jelly)</th>
-                <th>固態 UV 膠 (Solid)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>持久天數</strong></td>
-                <td>3 ～ 7 天</td>
-                <td>14 ～ 30 天</td>
-              </tr>
-              <tr>
-                <td><strong>防水等級</strong></td>
-                <td>中等（防短時洗手）</td>
-                <td>極高（可洗碗泡澡）</td>
-              </tr>
-              <tr>
-                <td><strong>真甲耗損</strong></td>
-                <td><strong>0% 完全無損</strong></td>
-                <td>需微拋磨與解膠</td>
-              </tr>
-              <tr>
-                <td><strong>甲片重複性</strong></td>
-                <td><strong>可無限次重複</strong></td>
-                <td>需刮殘膠，易磨損</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="media-card">
-          <img src="assets/jelly_sticker.jpg" alt="果凍膠">
-        </div>
-      </div>
-
-      <!-- Slide 8 -->
-      <div class="slide split-layout" data-note="切記不要暴力硬拔，5分鐘溫水浸泡就能無痛取下。">
-        <div>
-          <h2>安全卸甲 SOP（無損真甲守則）</h2>
-          <ol>
-            <li><strong>溫水浸泡 5 分鐘</strong>：40 度溫水加入少許洗手乳，軟化膠質。</li>
-            <li><strong>木棒尋找側緣縫隙</strong>：用斜頭櫸木棒從兩側甲溝刺入（嚴禁前端硬撬！）。</li>
-            <li><strong>滴入指緣油並旋轉</strong>：滴入潤滑油，輕輕以打圈旋轉方式推開膠體。</li>
-            <li><strong>甲片殘膠清理</strong>：捲除甲片內側殘膠，放入收納盒備用。</li>
-          </ol>
-          <div class="highlight-box">
-            🚫 <strong>嚴禁直接硬撕</strong>！暴力撕扯會拔除真甲表面角質層，導致指甲薄脆分層！
-          </div>
-        </div>
-        <div class="media-card">
-          <img src="assets/removal_care.png" alt="卸甲護理">
-        </div>
-      </div>
-
-      <!-- Slide 9 -->
-      <div class="slide split-layout" data-note="好習慣能讓穿戴甲持久度提升3倍。">
-        <div>
-          <h2>日常居家防護好習慣</h2>
-          <ul>
-            <li><strong>貼合後「黃金 4 小時」</strong>：密合穩固期絕對禁止洗手碰水。</li>
-            <li><strong>洗滌配戴防水手套</strong>：洗碗精等清潔劑會迅速乳化膠質。</li>
-            <li><strong>改用「指腹」代替指尖發力</strong>：打字按鍵以指腹為主，穿戴甲只負責美！</li>
-            <li><strong>睡前貼甲最佳</strong>：貼完直接就寢，完美度過無水密合期。</li>
-          </ul>
-        </div>
-        <div class="media-card">
-          <img src="assets/daily_care.png" alt="日常保養">
-        </div>
-      </div>
-
-      <!-- Slide 10 -->
-      <div class="slide" data-note="定期給指甲呼吸休息期，多塗抹指緣油滋養。">
-        <h2>原生甲修復與甲片長效保存</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 15px;">
-          <div style="background: #fff; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px;">
-            <h3 style="color: var(--primary); margin-bottom: 10px;">🌿 原生甲修護三部曲</h3>
-            <ul>
-              <li><strong>海綿拋光條輕撫</strong>：平整甲面微細膠痕。</li>
-              <li><strong>指緣油深層滋養</strong>：富含維生素 E 滴劑按摩至完全吸收。</li>
-              <li><strong>蛋白質硬甲油</strong>：薄軟指甲連擦一週形成加韌保護層。</li>
-            </ul>
-          </div>
-          <div style="background: #fff; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px;">
-            <h3 style="color: var(--primary); margin-bottom: 10px;">📦 穿戴甲保存原則</h3>
-            <ul>
-              <li><strong>酒精棉片清潔</strong>：擦拭內外側油脂皮屑。</li>
-              <li><strong>專用雙面膠盒收納</strong>：整齊排列，防止刮花彩繪。</li>
-              <li><strong>陰涼避光存放</strong>：避免日曬紫外線導致凝膠變黃變脆。</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide 11 -->
-      <div class="slide lead-slide" data-note="感謝大家參與，祝大家的指尖永遠精緻美麗！">
-        <span class="lead-badge">課程結語</span>
-        <h1>讓指尖美學成為日常的精緻陪伴</h1>
-        <p style="font-size: 20px; color: #555; margin-top: 14px;">感謝聆聽！歡迎提問與交流</p>
-        <div class="highlight-box" style="margin-top: 30px;">
-          📚 知識庫文件與 Markdown 源碼請查閱：<strong>00_Home_MOC/index.md</strong>
-        </div>
+      <div class="col-media">
+        <img src="assets/nail_shapes.jpg" alt="美甲指南大綱">
       </div>
     </div>
-
     <div class="slide-footer">
-      <span>Nail Care & Press-on Wiki | 教學簡報系統</span>
-      <span>按 [N] 鍵開啟/關閉演講者備忘稿</span>
+      <span>Nail Care & Press-on Wiki | 單元大綱</span>
+      <span>按 [◀] [▶] 切換簡報</span>
     </div>
+  </section>
 
-    <div class="progress-bar" id="progressBar"></div>
-
-    <div class="notes-drawer" id="notesDrawer">
-      <h4>🎙️ 講師備忘稿 (Speaker Notes)</h4>
-      <p id="speakerNotesText"></p>
+  <!-- Slide 3: 軟尺測量法 -->
+  <section class="slide" id="slide-3" data-note="測量時一定要使用柔軟的量甲尺貼著弧度量，千萬不能用硬直尺凌空比對，否則量出來的數值會比實際小很多。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元一：甲型測量與規格</span>
+      <span class="page-indicator">3 / 11</span>
     </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>真甲弧度軟尺測量法</h2>
+        <ol>
+          <li><strong>尋找測量位置</strong>：定位甲面最寬之處（通常位於甲床中段）。</li>
+          <li><strong>軟尺緊密貼合</strong>：緊貼真甲自然弧度，從左側甲溝量至右側甲溝。</li>
+          <li><strong>記錄五指數據</strong>：記錄大拇指至小指毫米數（如 15-11-12-11-8）。</li>
+        </ol>
+        <p><strong>標準尺碼對照</strong>：XS (14-10-11-10-7) / S (15-11-12-11-8) / M (16-12-13-12-9)</p>
+        <div class="highlight-card">
+          ⚠️ <strong>「寧大勿小」原則</strong>：若介於兩碼之間請選大一號！稍大的甲片可用砂條打磨微調邊緣，太小會壓迫甲床夾肉疼痛。
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/nail_shapes.jpg" alt="甲型測量對照">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[甲面尺寸測量法]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 4: 四大主流甲型 -->
+  <section class="slide" id="slide-4" data-note="杏仁型最修飾肉肉手或指節偏大的手型，如果第一次嘗試，非常推薦先從小杏仁或短橢圓入手。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元一：甲型測量與規格</span>
+      <span class="page-indicator">4 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>四大主流甲型特點與風格</h2>
+        <ul>
+          <li><strong>中梯形 (Medium Coffin)</strong><br>兩側向內收窄、頂端平切，視覺無限拉長手指，歐美高級感首選。</li>
+          <li><strong>杏仁型 (Almond)</strong><br>尖端圓潤優雅，最能修飾肉肉手與短手指，最適貓眼與冰透暈染。</li>
+          <li><strong>短橢圓 (Short Oval)</strong><br>最貼近原生甲，日常生活方便不卡手，上班族與學生族最愛。</li>
+          <li><strong>方形 / 短方 (Square)</strong><br>俐落有個性，甲面平整，最適合法式金邊與現代藝術彩繪。</li>
+        </ul>
+      </div>
+      <div class="col-media">
+        <img src="assets/nail_shapes.jpg" alt="四大甲型圖示">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[常見穿戴甲甲型特點]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 5: 貓眼膠光影與磁吸 -->
+  <section class="slide" id="slide-5" data-note="貓眼膠的精髓在於推磁的速度與距離，距離甲面3mm處操作是最佳磁場控制點。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元二：材質工藝與設計</span>
+      <span class="page-indicator">5 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>貓眼膠光澤與三大磁吸技巧</h2>
+        <ul>
+          <li><strong>寬貓眼 (Wide Cat-eye)</strong><br>使用磁鐵從甲面四角向中心均勻推磁，使磁粉平鋪於中央，形成絲緞般通透面狀高光。</li>
+          <li><strong>斜線貓眼 (Diagonal Cat-eye)</strong><br>將條形磁鐵 45 度傾斜懸浮於甲面上方 3mm 處，吸出俐落明亮折射光帶。</li>
+          <li><strong>玻璃珠貓眼 (Glass Bead)</strong><br>利用高磁力圓柱磁鐵環形繞圈引導，創造如水晶玻璃球般深邃靈動的立體光斑。</li>
+        </ul>
+        <div class="highlight-card">
+          ✨ <strong>光影要訣</strong>：搭配冰透裸粉底色或黑透底色，能大幅增強磁粉的深淺對比度。
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/cat_eye_design.jpg" alt="貓眼光影設計">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[貓眼膠光澤與磁吸技巧]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 6: 十指視覺焦點配置 -->
+  <section class="slide" id="slide-6" data-note="切記不要十指都畫得密密麻麻，適度的留白才能凸顯主焦點的精緻度。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元二：材質工藝與設計</span>
+      <span class="page-indicator">6 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>十指視覺構圖與焦點配置</h2>
+        <ul>
+          <li><strong>👑 主焦點（食指 / 無名指）</strong><br>配置最複雜的手繪油畫、3D 立體浮雕造型或奢華排鑽，負責第一眼驚豔。</li>
+          <li><strong>✨ 次焦點（大拇指 / 中指）</strong><br>配置通透貓眼光影、氣質冰透微暈染或 1mm 極細法式金邊，呼應主色調。</li>
+          <li><strong>🍃 陪襯指（小指）</strong><br>簡約純色跳色或極細微珠光，提供視覺喘息與留白空間，避免雜亂擁擠。</li>
+        </ul>
+        <div class="highlight-card">
+          🎨 <strong>三色律黃金原則</strong>：同手全套色彩不超過 3 種主色，保持色系冷暖調統一。
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/cat_eye_design.jpg" alt="十指配色佈局">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[十指配置與主次焦點設計]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 7: 果凍膠 vs 固態膠 -->
+  <section class="slide" id="slide-7" data-note="如果是週末要出遊或是買了高單價的手工甲，果凍膠是最佳夥伴；若是想要出國玩幾週不操心，固態膠更穩固。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元三：穿戴與卸除步驟</span>
+      <span class="page-indicator">7 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>果凍膠 vs 固態膠 深度對比</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>評估維度</th>
+              <th>果凍膠 (Jelly)</th>
+              <th>固態 UV 膠 (Solid)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>維持時間</strong></td>
+              <td>3 ～ 7 天</td>
+              <td>14 ～ 30 天</td>
+            </tr>
+            <tr>
+              <td><strong>防水抗油</strong></td>
+              <td>中等（防短時洗手）</td>
+              <td>極高（可洗碗泡澡）</td>
+            </tr>
+            <tr>
+              <td><strong>真甲耗損</strong></td>
+              <td><strong>0%（完全無損）</strong></td>
+              <td>輕微（需拋磨抓力）</td>
+            </tr>
+            <tr>
+              <td><strong>拆卸難度</strong></td>
+              <td>溫水泡 5 分鐘即拆</td>
+              <td>需解膠劑耐心軟化</td>
+            </tr>
+            <tr>
+              <td><strong>甲片重複</strong></td>
+              <td><strong>可無限次重複佩戴</strong></td>
+              <td>需刮殘膠，易磨損</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="highlight-card">
+          💡 <strong>選用建議</strong>：短期活動、經常換款式、高單價手工甲優先選果凍膠！
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/jelly_sticker.jpg" alt="果凍膠與固態膠">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[果凍膠與固態膠評估對比]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 8: 果凍膠佩戴三部曲 -->
+  <section class="slide" id="slide-8" data-note="這三步驟是果凍膠能戴滿一週的關鍵秘訣，特別是45度角貼入能完美避免後緣氣泡。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元三：穿戴與卸除步驟</span>
+      <span class="page-indicator">8 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>果凍膠標準佩戴三部曲</h2>
+        <ol>
+          <li><strong>酒精棉片徹底去油去水</strong><br>佩戴前徹底洗手，使用 75% 酒精棉片多次擦拭真甲甲面與甲溝，去除表面油脂與水分。</li>
+          <li><strong>吹風機微熱活化膠體</strong><br>貼上果凍膠後，用吹風機溫風微吹 <strong>3 秒</strong>，迅速激發壓敏膠分子的活性與黏著力。</li>
+          <li><strong>45 度斜向貼合用力按壓</strong><br>穿戴甲根部以 45 度角推入甘皮前 1mm 處，由後向前用力按壓 <strong>30 秒</strong>，徹底擠出空氣。</li>
+        </ol>
+        <div class="highlight-card">
+          ⚠️ <strong>黃金 4 小時原則</strong>：佩戴完成後 4 小時內嚴禁洗手、洗澡或碰水！
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/jelly_sticker.jpg" alt="果凍膠操作手法">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[果凍膠特性與操作規範]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 9: 安全卸甲 SOP -->
+  <section class="slide" id="slide-9" data-note="很多人因為暴力拔下穿戴甲導致真甲發白受損，只要花五分鐘泡溫水，就能完好無損地取下。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元四：卸甲護理與保養</span>
+      <span class="page-indicator">9 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>安全無痛卸甲標準 SOP</h2>
+        <ol>
+          <li><strong>40 度溫水浸泡 5 分鐘</strong><br>加入少許洗手乳或精油，使溫熱水分滲入邊緣軟化膠質。</li>
+          <li><strong>斜頭櫸木棒尋找側緣縫隙</strong><br>從兩側甲溝縫隙輕柔探入，<strong>嚴禁由指尖前端暴力硬撬！</strong></li>
+          <li><strong>滴入指緣油旋轉推除</strong><br>在接縫處滴入指緣油潤滑，以打圈旋轉方式輕推櫸木棒，使膠體自然分離。</li>
+          <li><strong>甲片殘膠清理與收納</strong><br>用指腹捲除甲片內側殘膠，穿戴甲完好無損可重複佩戴。</li>
+        </ol>
+        <div class="highlight-card">
+          🚫 <strong>切勿硬撕</strong>！暴力撕扯會將真甲表面角質撕裂，導致指甲薄脆發白！
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/removal_care.png" alt="安全卸甲步驟">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[安全卸甲與除膠步驟]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 10: 日常防護與真甲修復 -->
+  <section class="slide" id="slide-10" data-note="好習慣能讓穿戴甲持久度提升3倍。定期給指甲呼吸休息期，多塗抹指緣油滋養。">
+    <div class="slide-header">
+      <span class="slide-title-tag">單元五與六：日常防護與真甲滋養</span>
+      <span class="page-indicator">10 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <h2>日常居家防護與修護原則</h2>
+        <ul>
+          <li><strong>改用「指腹」代替指尖發力</strong><br>打字、按電梯、開車門習慣使用第一指節指腹施力，指尖穿戴甲只負責美觀！</li>
+          <li><strong>洗碗與家事必戴防水手套</strong><br>清潔劑含界面活性劑，高溫熱水會使膠質迅速軟化乳化。</li>
+          <li><strong>卸甲後深層滋養三部曲</strong><br>海綿拋光條輕撫平整 ➔ 指緣油深層滋養按摩 ➔ 軟薄甲塗擦蛋白質硬甲油。</li>
+          <li><strong>穿戴甲清潔與避光保存</strong><br>酒精擦拭內外側，收納於專用雙面膠盒並避開日曬紫外線。</li>
+        </ul>
+      </div>
+      <div class="col-media">
+        <img src="assets/daily_care.png" alt="日常防護護理">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>詳見知識庫筆記：[[日常佩戴與防護原則]]、[[卸甲後真甲修復與滋養]]</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- Slide 11: 結語與 Q&A -->
+  <section class="slide" id="slide-11" data-note="感謝大家參與，祝大家的指尖永遠精緻美麗！隨時查閱 Wiki 知識庫 index.md 獲取更多筆記。">
+    <div class="slide-header">
+      <span class="slide-title-tag">課程總結與交流</span>
+      <span class="page-indicator">11 / 11</span>
+    </div>
+    <div class="slide-body">
+      <div class="col-text">
+        <span class="badge">精緻美甲生活</span>
+        <h1>讓指尖美學成為<br>日常的精緻陪伴</h1>
+        <h3>感謝您的聆聽與參與！現在進入 Q & A 交流時間</h3>
+        <p><strong>Wiki 知識庫總導圖</strong>：00_Home_MOC/index.md</p>
+        <p><strong>Marp 簡報源檔</strong>：05_教學簡報素材/穿戴甲客製化設計與日常保養教學_Marp.md</p>
+        <div class="highlight-card">
+          💖 掌握測量、巧用工藝、安全卸甲、細心呵護，妳也能隨時擁有沙龍級健康美甲！
+        </div>
+      </div>
+      <div class="col-media">
+        <img src="assets/cat_eye_design.jpg" alt="美甲作品展示">
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span>Nail Care & Press-on Wiki | 感謝聆聽</span>
+      <span>按 [◀] [▶] 切換簡報</span>
+    </div>
+  </section>
+
+  <!-- 懸浮切換按鈕 -->
+  <div class="nav-controls">
+    <button class="nav-btn" id="prevBtn" title="上一頁 (◀)">◀ 上一張</button>
+    <button class="nav-btn" id="notesBtn" title="開啟/關閉演講備忘錄 (N)">🎙️ 備忘稿 (N)</button>
+    <button class="nav-btn" id="nextBtn" title="下一頁 (▶)">下一張 ▶</button>
   </div>
 
-  <div class="controls">
-    <button class="btn" id="prevBtn">◀ 上一張</button>
-    <button class="btn" id="notesToggleBtn">🎙️ 講師備忘 (N)</button>
-    <button class="btn" id="nextBtn">下一張 ▶</button>
-  </div>
+  <!-- 講師備忘錄抽屜 -->
+  <aside class="notes-drawer" id="notesDrawer">
+    <h4>🎙️ 講師備忘錄 (Speaker Notes)</h4>
+    <p id="notesContent">（載入中...）</p>
+  </aside>
 
   <script>
     const slides = document.querySelectorAll('.slide');
-    const indicator = document.getElementById('slideIndicator');
-    const progressBar = document.getElementById('progressBar');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const notesBtn = document.getElementById('notesToggleBtn');
+    const notesBtn = document.getElementById('notesBtn');
     const notesDrawer = document.getElementById('notesDrawer');
-    const speakerNotesText = document.getElementById('speakerNotesText');
+    const notesContent = document.getElementById('notesContent');
 
-    let currentSlide = 0;
+    let currentIndex = 0;
 
-    function updateSlide(index) {
+    function goToSlide(index) {
       if (index < 0) index = 0;
       if (index >= slides.length) index = slides.length - 1;
-      currentSlide = index;
+      currentIndex = index;
 
-      slides.forEach((s, idx) => {
-        s.classList.toggle('active', idx === currentSlide);
+      slides.forEach((slide, i) => {
+        if (i === currentIndex) {
+          slide.classList.add('active');
+          const note = slide.getAttribute('data-note') || '（本頁無講師備忘稿）';
+          notesContent.textContent = note;
+          const indicator = slide.querySelector('.page-indicator');
+          if (indicator) {
+            indicator.textContent = `${currentIndex + 1} / ${slides.length}`;
+          }
+        } else {
+          slide.classList.remove('active');
+        }
       });
-
-      indicator.textContent = `${currentSlide + 1} / ${slides.length}`;
-      progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
-
-      const currentNote = slides[currentSlide].getAttribute('data-note') || '（本頁無特別演講備忘）';
-      speakerNotesText.textContent = currentNote;
     }
 
-    prevBtn.addEventListener('click', () => updateSlide(currentSlide - 1));
-    nextBtn.addEventListener('click', () => updateSlide(currentSlide + 1));
+    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    notesBtn.addEventListener('click', () => notesDrawer.classList.toggle('open'));
 
-    notesBtn.addEventListener('click', () => {
-      notesDrawer.classList.toggle('open');
-    });
-
+    // 鍵盤導航
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        updateSlide(currentSlide + 1);
+        e.preventDefault();
+        goToSlide(currentIndex + 1);
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        updateSlide(currentSlide - 1);
+        e.preventDefault();
+        goToSlide(currentIndex - 1);
       } else if (e.key === 'Home') {
-        updateSlide(0);
+        e.preventDefault();
+        goToSlide(0);
       } else if (e.key === 'End') {
-        updateSlide(slides.length - 1);
+        e.preventDefault();
+        goToSlide(slides.length - 1);
       } else if (e.key.toLowerCase() === 'n') {
         notesDrawer.classList.toggle('open');
       }
     });
 
-    updateSlide(0);
+    goToSlide(0);
   </script>
 </body>
 </html>
